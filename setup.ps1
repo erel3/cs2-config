@@ -2,9 +2,8 @@
 # Run: irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 | iex
 
 $repo = "https://raw.githubusercontent.com/erel3/cs2-config/main"
-$files = @("autoexec.cfg", "practice.cfg", "cs2_video.txt")
 
-# Find Steam userdata path
+# Find Steam path
 $steamPaths = @(
     "$env:ProgramFiles\Steam",
     "${env:ProgramFiles(x86)}\Steam",
@@ -50,18 +49,35 @@ if ($userDirs.Count -eq 1) {
     $userId = $userDirs[$choice].Name
 }
 
-$cfgDir = "$steamPath\userdata\$userId\730\local\cfg"
+$userCfgDir = "$steamPath\userdata\$userId\730\local\cfg"
+$gameCfgDir = "$steamPath\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
 
-if (-not (Test-Path $cfgDir)) {
-    New-Item -ItemType Directory -Path $cfgDir -Force | Out-Null
+# cs2_video.txt -> userdata (read at startup)
+if (-not (Test-Path $userCfgDir)) {
+    New-Item -ItemType Directory -Path $userCfgDir -Force | Out-Null
 }
 
-Write-Host "`nInstalling to: $cfgDir" -ForegroundColor Cyan
+Write-Host "`nVideo settings -> $userCfgDir" -ForegroundColor Cyan
+Write-Host "  Downloading cs2_video.txt..." -NoNewline
+try {
+    Invoke-WebRequest "$repo/cs2_video.txt" -OutFile "$userCfgDir\cs2_video.txt" -UseBasicParsing
+    Write-Host " OK" -ForegroundColor Green
+} catch {
+    Write-Host " FAILED" -ForegroundColor Red
+}
 
-foreach ($file in $files) {
+# cfg files -> game folder (for exec command)
+if (-not (Test-Path $gameCfgDir)) {
+    Write-Host "`nGame cfg folder not found: $gameCfgDir" -ForegroundColor Red
+    Write-Host "Is CS2 installed?" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "`nConfig files -> $gameCfgDir" -ForegroundColor Cyan
+foreach ($file in @("autoexec.cfg", "practice.cfg")) {
     Write-Host "  Downloading $file..." -NoNewline
     try {
-        Invoke-WebRequest "$repo/$file" -OutFile "$cfgDir\$file" -UseBasicParsing
+        Invoke-WebRequest "$repo/$file" -OutFile "$gameCfgDir\$file" -UseBasicParsing
         Write-Host " OK" -ForegroundColor Green
     } catch {
         Write-Host " FAILED" -ForegroundColor Red

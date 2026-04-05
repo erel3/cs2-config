@@ -3,16 +3,17 @@
 # Run: curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh | bash
 
 REPO="https://raw.githubusercontent.com/erel3/cs2-config/main"
-FILES="autoexec.cfg practice.cfg cs2_video.txt"
-BOTTLES_DIR="$HOME/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam/userdata"
+STEAM_ROOT="$HOME/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam"
+USERDATA_DIR="$STEAM_ROOT/userdata"
+GAME_CFG_DIR="$STEAM_ROOT/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg"
 
-if [ ! -d "$BOTTLES_DIR" ]; then
-    echo "CrossOver Steam bottle not found at: $BOTTLES_DIR"
+if [ ! -d "$USERDATA_DIR" ]; then
+    echo "CrossOver Steam bottle not found."
     exit 1
 fi
 
 # Find Steam ID folders
-IDS=($(ls "$BOTTLES_DIR" | grep -E '^[0-9]+$'))
+IDS=($(ls "$USERDATA_DIR" | grep -E '^[0-9]+$'))
 
 if [ ${#IDS[@]} -eq 0 ]; then
     echo "No Steam accounts found."
@@ -28,15 +29,25 @@ else
     STEAM_ID="${IDS[$choice]}"
 fi
 
-CFG_DIR="$BOTTLES_DIR/$STEAM_ID/730/local/cfg"
-mkdir -p "$CFG_DIR"
+USER_CFG_DIR="$USERDATA_DIR/$STEAM_ID/730/local/cfg"
+mkdir -p "$USER_CFG_DIR"
 
+# cs2_video.txt goes to userdata (read at startup)
 echo ""
-echo "Installing to: $CFG_DIR"
+echo "Video settings -> $USER_CFG_DIR"
+printf "  Downloading cs2_video.txt..."
+if curl -sL "$REPO/cs2_video.txt" -o "$USER_CFG_DIR/cs2_video.txt"; then
+    echo " OK"
+else
+    echo " FAILED"
+fi
 
-for file in $FILES; do
+# cfg files go to game folder (for exec command)
+echo ""
+echo "Config files -> $GAME_CFG_DIR"
+for file in autoexec.cfg practice.cfg; do
     printf "  Downloading %s..." "$file"
-    if curl -sL "$REPO/$file" -o "$CFG_DIR/$file"; then
+    if curl -sL "$REPO/$file" -o "$GAME_CFG_DIR/$file"; then
         echo " OK"
     else
         echo " FAILED"
