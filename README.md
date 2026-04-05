@@ -17,12 +17,12 @@ Portable CS2 configuration for quick setup at computer clubs.
 
 **Windows** (computer club):
 ```powershell
-irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 | iex
+irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 -OutFile $env:TEMP\cs2.ps1; & $env:TEMP\cs2.ps1
 ```
 
 **macOS** (CrossOver):
 ```bash
-curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh | bash
+bash <(curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh)
 ```
 
 ### Option B: Manual
