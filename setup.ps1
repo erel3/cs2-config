@@ -36,25 +36,48 @@ if (-not $steamPath) {
 
 $gameCfgDir = "$steamPath\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
 
-# cfg files -> game folder (for exec command)
 if (-not (Test-Path $gameCfgDir)) {
     Write-Host "`nGame cfg folder not found: $gameCfgDir" -ForegroundColor Red
     Write-Host "Is CS2 installed?" -ForegroundColor Yellow
     exit 1
 }
 
-Write-Host "`nConfig files -> $gameCfgDir" -ForegroundColor Cyan
-foreach ($file in @("autoexec.cfg", "practice.cfg")) {
-    Write-Host "  Downloading $file..." -NoNewline
+# Download all cfg modules
+$allFiles = @("cfg/base.cfg", "cfg/binds.cfg", "cfg/crosshair.cfg", "cfg/viewmodel.cfg", "cfg/mouse.cfg", "practice.cfg")
+Write-Host "`nDownloading configs to $gameCfgDir" -ForegroundColor Cyan
+foreach ($file in $allFiles) {
+    $outName = $file -replace "cfg/", ""
+    Write-Host "  $outName..." -NoNewline
     try {
-        Invoke-WebRequest "$repo/$file" -OutFile "$gameCfgDir\$file" -UseBasicParsing
+        Invoke-WebRequest "$repo/$file" -OutFile "$gameCfgDir\$outName" -UseBasicParsing
         Write-Host " OK" -ForegroundColor Green
     } catch {
         Write-Host " FAILED" -ForegroundColor Red
     }
 }
 
-Write-Host "`nDone! Launch CS2 and your settings will apply automatically." -ForegroundColor Green
+# Ask which optional modules to include
+Write-Host ""
+$modules = @("base", "binds")
+
+$yn = Read-Host "Install crosshair settings? (Y/n)"
+if ($yn -ne "n") { $modules += "crosshair" }
+
+$yn = Read-Host "Install viewmodel settings? (Y/n)"
+if ($yn -ne "n") { $modules += "viewmodel" }
+
+$yn = Read-Host "Install mouse sensitivity? (Y/n)"
+if ($yn -ne "n") { $modules += "mouse" }
+
+# Build autoexec.cfg
+$autoexec = "// === CS2 CONFIG by erel3 ===`n"
+foreach ($m in $modules) {
+    $autoexec += "exec $m`n"
+}
+Set-Content -Path "$gameCfgDir\autoexec.cfg" -Value $autoexec -NoNewline
+
+Write-Host "`nGenerated autoexec.cfg with: $($modules -join ', ')" -ForegroundColor Green
+Write-Host "`nDone! Launch CS2 — settings apply automatically." -ForegroundColor Green
 Write-Host "If autoexec doesn't run, add '+exec autoexec' to CS2 launch options." -ForegroundColor Yellow
 Write-Host "For practice mode, type 'exec practice' in console." -ForegroundColor Yellow
 Write-Host "For video settings, set them manually in-game (see README)." -ForegroundColor Yellow
