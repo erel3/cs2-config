@@ -3,32 +3,32 @@
 
 $repo = "https://raw.githubusercontent.com/erel3/cs2-config/main"
 
-# Find Steam path
-$steamPaths = @(
-    "$env:ProgramFiles\Steam",
-    "${env:ProgramFiles(x86)}\Steam",
-    "C:\Steam",
-    "D:\Steam",
-    "E:\Steam",
-    "C:\Games\Steam",
-    "D:\Games\Steam",
-    "C:\SteamLibrary",
-    "D:\SteamLibrary",
-    "E:\SteamLibrary"
-)
-
+# Find Steam path via registry first, then fallback to common paths
 $steamPath = $null
-foreach ($p in $steamPaths) {
-    if (Test-Path "$p\userdata") {
-        $steamPath = $p
-        break
+$regPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Valve\Steam" -Name "InstallPath" -ErrorAction SilentlyContinue).InstallPath
+if ($regPath -and (Test-Path "$regPath\steamapps")) {
+    $steamPath = $regPath
+}
+
+if (-not $steamPath) {
+    foreach ($p in @(
+        "$env:ProgramFiles\Steam",
+        "${env:ProgramFiles(x86)}\Steam",
+        "C:\Steam", "D:\Steam", "E:\Steam",
+        "C:\Games\Steam", "D:\Games\Steam",
+        "C:\SteamLibrary", "D:\SteamLibrary", "E:\SteamLibrary"
+    )) {
+        if (Test-Path "$p\steamapps") {
+            $steamPath = $p
+            break
+        }
     }
 }
 
 if (-not $steamPath) {
     Write-Host "Steam not found. Enter Steam path manually:" -ForegroundColor Yellow
     $steamPath = Read-Host
-    if (-not (Test-Path "$steamPath\userdata")) {
+    if (-not (Test-Path "$steamPath\steamapps")) {
         Write-Host "Invalid path. Exiting." -ForegroundColor Red
         exit 1
     }
