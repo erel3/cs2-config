@@ -41,12 +41,29 @@ curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh | 
 
 ## Practice Mode
 
-In CS2 console:
+### Creating a practice match
+
+1. Play → Practice → Casual
+2. Pick a map, click Go
+3. Invite friends via Steam overlay (Shift+Tab) or lobby
+4. Open console (`~`)
+
+### Loading practice config
+
 ```
 exec practice
 ```
 
-This gives you: infinite grenades, grenade trajectories, long rounds, no bots, bullet impacts, buy anywhere.
+### What it gives you
+
+- Infinite grenades + trajectory preview
+- Bullet impact markers (10 sec)
+- Auto-respawn on death
+- Noclip on `L`, god mode
+- X-ray player outlines
+- Buy anywhere, unlimited money
+- Rethrow last grenade on `K`
+- Restart round on `J`
 
 ## Launch Options
 
