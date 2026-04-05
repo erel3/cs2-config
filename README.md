@@ -6,8 +6,8 @@ Portable CS2 configuration for quick setup at computer clubs.
 
 | File | What it does | Where to put it |
 |------|-------------|-----------------|
-| `autoexec.cfg` | Sensitivity, crosshair, keybinds, audio, HUD, radar | `Steam/userdata/<ID>/730/local/cfg/` |
-| `practice.cfg` | Grenade training mode (infinite ammo, trajectories, etc.) | Same folder |
+| `autoexec.cfg` | Sensitivity, crosshair, keybinds, audio, HUD, radar | `game/csgo/cfg/` |
+| `practice.cfg` | Grenade training mode (infinite ammo, trajectories, etc.) | `game/csgo/cfg/` |
 | `setup.ps1` | Auto-installs configs (Windows) | Run from PowerShell |
 | `setup-mac.sh` | Auto-installs configs (macOS/CrossOver) | Run from Terminal |
 
@@ -27,9 +27,9 @@ curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh | 
 
 ### Option B: Manual
 
-1. Find your Steam ID folder: `C:\Program Files (x86)\Steam\userdata\<YOUR_STEAM_ID>\730\local\cfg\`
-2. Copy `autoexec.cfg` and `cs2_video.txt` into that folder
-3. Launch CS2 — video settings apply automatically
+1. Find the game cfg folder: `...\Counter-Strike Global Offensive\game\csgo\cfg\`
+2. Copy `autoexec.cfg` and `practice.cfg` into that folder
+3. Launch CS2
 4. If `autoexec.cfg` didn't run, type `exec autoexec` in console
 
 ### Option C: Console paste
@@ -55,7 +55,7 @@ exec practice
 
 ### What it gives you
 
-Infinite grenades, trajectory preview, bullet impacts, auto-respawn, god mode, x-ray outlines, buy anywhere, unlimited money.
+Infinite grenades, trajectory preview, bullet impacts (10 sec), auto-respawn, god mode, x-ray outlines, buy anywhere, unlimited money, random spawns, frozen bots.
 
 ## Keybinds
 
@@ -78,9 +78,8 @@ Infinite grenades, trajectory preview, bullet impacts, auto-respawn, god mode, x
 
 | Key | Action |
 |-----|--------|
-| `'` | Restart round (new spawn) |
-| `H` | Clear ALL grenades/fire |
-| `J` | Clear smokes only |
+| `'` | Restart round (random spawn) |
+| `J` | Clear all grenades/fire |
 | `K` | Rethrow last grenade |
 | `L` | Noclip (fly through walls) |
 | `I` | Add T bot at crosshair |
@@ -116,7 +115,6 @@ Stored in Steam account (synced automatically). Set in Steam → CS2 → Propert
 
 ## Notes
 
-- **Steam Cloud** may overwrite `cs2_video.txt` on sync. Disable it for CS2: Steam → CS2 → Properties → General → uncheck Steam Cloud.
 - **autoexec.cfg** runs automatically on game start. If it doesn't, add `+exec autoexec` to CS2 launch options.
-- Video settings (`cs2_video.txt`) are read at startup — changes require game restart.
 - Console commands in `.cfg` files apply instantly, no restart needed.
+- Video settings are set in-game and sync via Steam Cloud across PCs.
