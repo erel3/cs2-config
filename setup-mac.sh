@@ -31,7 +31,10 @@ fi
 
 # Ask which optional modules to include
 echo ""
-MODULES="exec base\nexec binds"
+MODULES="exec base"
+
+read -p "Install keybinds? (Y/n) " yn
+[ "$yn" != "n" ] && MODULES="$MODULES\nexec binds"
 
 read -p "Install crosshair settings? (Y/n) " yn
 [ "$yn" != "n" ] && MODULES="$MODULES\nexec crosshair"

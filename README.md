@@ -28,12 +28,13 @@ irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 -OutFile $
 bash <(curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh)
 ```
 
-The script downloads all config files, then asks which personal settings to include:
+The script downloads all config files, then asks which modules to include:
+- Keybinds (Y/n)
 - Crosshair (Y/n)
 - Viewmodel (Y/n)
 - Mouse sensitivity (Y/n)
 
-Base settings and keybinds are always installed.
+Base settings (audio, HUD, radar, performance, etc.) are always installed.
 
 ### Manual
 

@@ -58,7 +58,10 @@ foreach ($file in $allFiles) {
 
 # Ask which optional modules to include
 Write-Host ""
-$modules = @("base", "binds")
+$modules = @("base")
+
+$yn = Read-Host "Install keybinds? (Y/n)"
+if ($yn -ne "n") { $modules += "binds" }
 
 $yn = Read-Host "Install crosshair settings? (Y/n)"
 if ($yn -ne "n") { $modules += "crosshair" }
