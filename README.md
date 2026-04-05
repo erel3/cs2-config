@@ -8,7 +8,6 @@ Portable CS2 configuration for quick setup at computer clubs.
 |------|-------------|-----------------|
 | `autoexec.cfg` | Sensitivity, crosshair, keybinds, audio, HUD, radar | `Steam/userdata/<ID>/730/local/cfg/` |
 | `practice.cfg` | Grenade training mode (infinite ammo, trajectories, etc.) | Same folder |
-| `cs2_video.txt` | Video settings (resolution, MSAA, shadows, textures) | Same folder |
 | `setup.ps1` | Auto-installs configs (Windows) | Run from PowerShell |
 | `setup-mac.sh` | Auto-installs configs (macOS/CrossOver) | Run from Terminal |
 
@@ -56,14 +55,56 @@ exec practice
 
 ### What it gives you
 
-- Infinite grenades + trajectory preview
-- Bullet impact markers (10 sec)
-- Auto-respawn on death
-- Noclip on `L`, god mode
-- X-ray player outlines
-- Buy anywhere, unlimited money
-- Rethrow last grenade on `K`
-- Restart round on `J`
+Infinite grenades, trajectory preview, bullet impacts, auto-respawn, god mode, x-ray outlines, buy anywhere, unlimited money.
+
+## Keybinds
+
+### Gameplay (autoexec.cfg)
+
+| Key | Action |
+|-----|--------|
+| `Z` | Flashbang |
+| `X` | Smoke |
+| `C` | HE grenade |
+| `V` | Molotov/Incendiary |
+| `Q` | Quick switch (AWP no-rescope) |
+| `Mwheeldown` | Jump (bhop) |
+| `N` | Toggle radar (overview / zoomed+rotating) |
+| `/` | Toggle mute all except friends/party |
+| `,` | Bot: hold position |
+| `.` | Bot: follow me |
+
+### Practice mode (practice.cfg)
+
+| Key | Action |
+|-----|--------|
+| `'` | Restart round (new spawn) |
+| `H` | Clear ALL grenades/fire |
+| `J` | Clear smokes only |
+| `K` | Rethrow last grenade |
+| `L` | Noclip (fly through walls) |
+| `I` | Add T bot at crosshair |
+| `O` | Add CT bot at crosshair |
+| `P` | Kick all bots |
+| `[` | Toggle bots freeze/move |
+| `]` | Toggle bots crouch/stand |
+
+## Video Settings (set manually in-game)
+
+Not scripted — set once in Settings → Video, syncs via Steam Cloud.
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| V-Sync | Off | Less input lag |
+| MSAA | 8x (4x on Mac) | Smoother edges, spot enemies easier |
+| Shadow Quality | Very High | See enemy shadows around corners |
+| Dynamic Shadows | All | Same — player shadows visible |
+| Texture Detail | Medium | No gameplay impact, saves VRAM |
+| Texture Filtering | Anisotropic 16x | Near-zero FPS cost, cleaner textures |
+| Shader Detail | Low | Barely visible, big FPS gain |
+| Particle Detail | Medium | Higher = thicker smokes (worse) |
+| Ambient Occlusion | Disabled | Just eye candy, costs FPS |
+| HDR | Performance | Less bloom, cleaner visibility |
 
 ## Launch Options
 

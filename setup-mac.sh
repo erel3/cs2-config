@@ -12,36 +12,6 @@ if [ ! -d "$USERDATA_DIR" ]; then
     exit 1
 fi
 
-# Find Steam ID folders
-IDS=($(ls "$USERDATA_DIR" | grep -E '^[0-9]+$'))
-
-if [ ${#IDS[@]} -eq 0 ]; then
-    echo "No Steam accounts found."
-    exit 1
-elif [ ${#IDS[@]} -eq 1 ]; then
-    STEAM_ID="${IDS[0]}"
-else
-    echo "Multiple Steam accounts found:"
-    for i in "${!IDS[@]}"; do
-        echo "  [$i] ${IDS[$i]}"
-    done
-    read -p "Select account number: " choice
-    STEAM_ID="${IDS[$choice]}"
-fi
-
-USER_CFG_DIR="$USERDATA_DIR/$STEAM_ID/730/local/cfg"
-mkdir -p "$USER_CFG_DIR"
-
-# cs2_video.txt goes to userdata (read at startup)
-echo ""
-echo "Video settings -> $USER_CFG_DIR"
-printf "  Downloading cs2_video.txt..."
-if curl -sL "$REPO/cs2_video.txt" -o "$USER_CFG_DIR/cs2_video.txt"; then
-    echo " OK"
-else
-    echo " FAILED"
-fi
-
 # cfg files go to game folder (for exec command)
 echo ""
 echo "Config files -> $GAME_CFG_DIR"
@@ -58,3 +28,4 @@ echo ""
 echo "Done! Launch CS2 and your settings will apply automatically."
 echo "If autoexec doesn't run, add '+exec autoexec' to CS2 launch options."
 echo "For practice mode, type 'exec practice' in console."
+echo "For video settings, set them manually in-game (see README)."
