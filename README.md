@@ -100,13 +100,15 @@ Not scripted — set once in Settings → Video, syncs via Steam Cloud.
 | Ambient Occlusion | Disabled | Costs FPS |
 | HDR | Performance | Less bloom |
 
-## Launch Options
+## Launch Options (manual)
 
-Stored in Steam account (synced automatically). Set in Steam → CS2 → Properties → Launch Options:
+Not part of the config — set these yourself once in Steam → right-click CS2 → Properties → Launch Options:
 
 ```
 -novid -tickrate 128 -high
 ```
+
+`-novid` skips intro video, `-tickrate 128` forces 128 tick on local servers, `-high` sets process priority. Syncs via Steam account.
 
 ## Notes
 
