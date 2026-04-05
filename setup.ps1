@@ -7,8 +7,12 @@ $repo = "https://raw.githubusercontent.com/erel3/cs2-config/main"
 $steamPaths = @(
     "$env:ProgramFiles\Steam",
     "${env:ProgramFiles(x86)}\Steam",
+    "C:\Steam",
     "D:\Steam",
     "E:\Steam",
+    "C:\Games\Steam",
+    "D:\Games\Steam",
+    "C:\SteamLibrary",
     "D:\SteamLibrary",
     "E:\SteamLibrary"
 )
