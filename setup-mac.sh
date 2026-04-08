@@ -22,12 +22,14 @@ for file in base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg; do
         echo " FAILED"
     fi
 done
-printf "  practice.cfg..."
-if curl -sL "$REPO/practice.cfg" -o "$GAME_CFG_DIR/practice.cfg"; then
-    echo " OK"
-else
-    echo " FAILED"
-fi
+for file in practice.cfg practice_off.cfg; do
+    printf "  %s..." "$file"
+    if curl -sL "$REPO/$file" -o "$GAME_CFG_DIR/$file"; then
+        echo " OK"
+    else
+        echo " FAILED"
+    fi
+done
 
 # Ask which optional modules to include
 echo ""

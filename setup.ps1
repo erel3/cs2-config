@@ -43,7 +43,7 @@ if (-not (Test-Path $gameCfgDir)) {
 }
 
 # Download all cfg modules
-$allFiles = @("cfg/base.cfg", "cfg/binds.cfg", "cfg/crosshair.cfg", "cfg/viewmodel.cfg", "cfg/mouse.cfg", "practice.cfg")
+$allFiles = @("cfg/base.cfg", "cfg/binds.cfg", "cfg/crosshair.cfg", "cfg/viewmodel.cfg", "cfg/mouse.cfg", "practice.cfg", "practice_off.cfg")
 Write-Host "`nDownloading configs to $gameCfgDir" -ForegroundColor Cyan
 foreach ($file in $allFiles) {
     $outName = $file -replace "cfg/", ""
