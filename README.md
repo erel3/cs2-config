@@ -2,35 +2,58 @@
 
 Portable CS2 configuration for quick setup at computer clubs.
 
-## Quick Setup
+## Quick Setup (Windows — pick whichever works)
 
-### Script (recommended)
+Try methods top to bottom. If one fails, move to the next.
 
-**Windows** (computer club) — paste into PowerShell:
+### Method 1: PowerShell (fastest)
+
+Paste into PowerShell:
 ```powershell
 irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 | iex
 ```
+Pipes script into memory — no `.ps1` file on disk, so ExecutionPolicy doesn't apply.
 
-This pipes the script into memory without writing a `.ps1` file, so PowerShell execution policy doesn't apply.
+### Method 2: cmd.exe + batch file
 
-**macOS** (CrossOver):
+If PowerShell is blocked entirely, paste into **cmd.exe**:
+```cmd
+curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup.bat -o %TEMP%\cs2.bat && %TEMP%\cs2.bat
+```
+Uses only `curl.exe` (built into Windows 10+) + batch. No PowerShell needed.
+
+### Method 3: cmd.exe one-liner (no prompts, installs everything)
+
+Absolute fallback — downloads all files and creates autoexec with all modules:
+```cmd
+for %f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg) do curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/cfg/%f -o "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\%f"
+for %f in (practice.cfg practice_off.cfg) do curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/%f -o "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\%f"
+(echo // === CS2 CONFIG by erel3 === & echo exec base & echo exec binds & echo exec crosshair & echo exec viewmodel & echo exec mouse) > "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\autoexec.cfg"
+```
+> **Note:** If Steam is not in `Program Files (x86)`, replace the path. Check Steam → Settings → Storage for the actual path.
+
+### Method 4: Download ZIP + auto-install
+
+1. Download [github.com/erel3/cs2-config](https://github.com/erel3/cs2-config) → Code → Download ZIP
+2. Extract anywhere
+3. Double-click `install.bat` — finds Steam automatically, copies files, asks which modules to install
+
+No internet needed after download. No PowerShell, no curl.
+
+### Method 5: Fully manual
+
+1. Download ZIP (same as above)
+2. Copy all files from `cfg/`, `practice.cfg`, and `practice_off.cfg` into `...\Counter-Strike Global Offensive\game\csgo\cfg\`
+3. Create `autoexec.cfg` with `exec base`, `exec binds`, `exec crosshair`, `exec viewmodel`, `exec mouse`
+4. If autoexec doesn't run, add `+exec autoexec` to CS2 launch options
+
+### macOS (CrossOver)
+
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh)
 ```
 
-The script downloads all config files, then asks which modules to include:
-- Keybinds (Y/n)
-- Crosshair (Y/n)
-- Viewmodel (Y/n)
-- Mouse sensitivity (Y/n)
-
-Base settings are always installed.
-
-### Manual
-
-1. Copy all files from `cfg/`, `practice.cfg`, and `practice_off.cfg` into `...\Counter-Strike Global Offensive\game\csgo\cfg\`
-2. Create `autoexec.cfg` with `exec base`, `exec binds`, `exec crosshair`, `exec viewmodel`, `exec mouse`
-3. If autoexec doesn't run, add `+exec autoexec` to CS2 launch options
+All methods ask which optional modules to include (keybinds, crosshair, viewmodel, mouse). Base settings are always installed. Methods 3-4 install everything.
 
 ## What's Changed
 
