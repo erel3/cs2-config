@@ -26,21 +26,35 @@ if (-not $steamPath) {
 }
 
 if (-not $steamPath) {
-    Write-Host "Steam not found. Enter Steam path manually:" -ForegroundColor Yellow
+    Write-Host "Steam not found. Enter Steam path manually (e.g. D:\Steam):" -ForegroundColor Yellow
     $steamPath = Read-Host
     if (-not (Test-Path "$steamPath\steamapps")) {
-        Write-Host "Invalid path. Exiting." -ForegroundColor Red
-        exit 1
+        Write-Host "Invalid path: $steamPath" -ForegroundColor Red
+        Read-Host "Press Enter to close"
+        return
     }
 }
+Write-Host "Found Steam: $steamPath" -ForegroundColor Green
 
-$gameCfgDir = "$steamPath\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
-
-if (-not (Test-Path $gameCfgDir)) {
-    Write-Host "`nGame cfg folder not found: $gameCfgDir" -ForegroundColor Red
-    Write-Host "Is CS2 installed?" -ForegroundColor Yellow
-    exit 1
+# Find CS2 install by scanning all Steam library folders (libraryfolders.vdf)
+$gameCfgDir = $null
+$libFile = "$steamPath\steamapps\libraryfolders.vdf"
+$libraries = @($steamPath)
+if (Test-Path $libFile) {
+    $libraries += (Select-String -Path $libFile -Pattern '"path"\s+"([^"]+)"' -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value -replace '\\\\', '\' }
 }
+foreach ($lib in $libraries | Select-Object -Unique) {
+    $candidate = "$lib\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
+    if (Test-Path $candidate) { $gameCfgDir = $candidate; break }
+}
+
+if (-not $gameCfgDir) {
+    Write-Host "`nCS2 not found in any Steam library. Checked:" -ForegroundColor Red
+    $libraries | ForEach-Object { Write-Host "  $_" }
+    Read-Host "Press Enter to close"
+    return
+}
+Write-Host "Found CS2: $gameCfgDir" -ForegroundColor Green
 
 # Download all cfg modules
 $allFiles = @("cfg/base.cfg", "cfg/binds.cfg", "cfg/crosshair.cfg", "cfg/viewmodel.cfg", "cfg/mouse.cfg", "practice.cfg", "practice_off.cfg")

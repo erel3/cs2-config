@@ -30,14 +30,29 @@ echo Steam not found. Enter Steam path:
 set /p "STEAM="
 
 :found
-set "CFG=%STEAM%\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
-if not exist "%CFG%" (
+setlocal EnableDelayedExpansion
+set "CFG="
+if exist "%STEAM%\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg" (
+    set "CFG=%STEAM%\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
+)
+if not defined CFG if exist "%STEAM%\steamapps\libraryfolders.vdf" (
+    for /f "usebackq tokens=4 delims=^"" %%L in (`findstr /c:"\"path\"" "%STEAM%\steamapps\libraryfolders.vdf"`) do (
+        set "LIB=%%L"
+        set "LIB=!LIB:\\=\!"
+        if exist "!LIB!\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg" (
+            if not defined CFG set "CFG=!LIB!\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg"
+        )
+    )
+)
+if not defined CFG (
     echo.
-    echo ERROR: Game cfg folder not found: %CFG%
-    echo Is CS2 installed?
+    echo ERROR: CS2 not found in any Steam library.
+    echo Steam path: %STEAM%
+    echo Check Steam ^> Settings ^> Storage to see where CS2 is installed.
     pause
     exit /b 1
 )
+echo Found CS2: %CFG%
 
 echo.
 echo Copying configs to %CFG%
