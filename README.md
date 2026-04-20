@@ -83,8 +83,9 @@ Overrides applied on top of the restored defaults.
 | `4` | Decoy |
 | `Q` | Quick switch (AWP no-rescope) |
 | `Mwheeldown` | Jump (bhop) |
-| `Left Alt` | Drop bomb (switch to C4, drop, switch back) |
-| `/` | Toggle mute all except friends/party |
+| `CapsLock` | Drop bomb (switch to C4, drop, switch back) |
+| `/` | Toggle mute all incoming voice (audio feedback) |
+| `Backspace` | Clutch mode (mutes voice + distracting sounds until round end / death) |
 | `,` `.` | Bot hold position / follow |
 | `N` | Radar zoom toggle (defined in base.cfg) |
 
