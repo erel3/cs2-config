@@ -1,0 +1,26 @@
+name: validate
+
+on:
+  push:
+    paths:
+      - "**/*.cfg"
+      - "validate.py"
+      - "docs/cvarlist.txt"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "**/*.cfg"
+      - "validate.py"
+      - "docs/cvarlist.txt"
+  workflow_dispatch:
+
+jobs:
+  cfg-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run validate.py
+        run: python3 validate.py
