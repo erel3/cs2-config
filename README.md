@@ -63,15 +63,15 @@ All methods ask which optional modules to include (keybinds, crosshair, viewmode
 
 **Audio** — Crisp EQ, all music disabled (except 10-sec bomb warning at ~35% — cvar is `0.1225` because the in-game slider uses a square-root scale), lower audio latency, MVP music muted when players alive.
 
-**Team info** — teammate data always visible through walls (`cl_teamid_overhead_mode 3`, `cl_teamid_overhead_always 1`): pips + names + health + equipment.
+**Team info** — teammate data always visible through walls (`cl_teamid_overhead_mode 3`): pips + names + health + equipment.
 
-**Radar** — zoomed out (0.33), no rotation, not centered. `N` toggles between overview and zoomed+rotating mode. Square radar on scoreboard.
+**Radar** — zoomed out (0.25), no rotation, not centered. `N` toggles between overview and zoomed+rotating mode. Square radar on scoreboard.
 
 **Visibility** — no first-person bullet tracers, teammate loadouts visible through walls, right-hand viewmodel.
 
 **Performance** — FPS cap 400 (200 in menus), low latency mode, instant alt-tab return, no glass/vent debris, facial animations off.
 
-**HUD/Game** — teammate colors, no tutorial hints, no silencer detach, instant grenade lineup reticle, no damage prediction effects, **FPS-only telemetry** (ping/network indicators disabled), hide enemy name under crosshair, round-end damage printout on screen.
+**HUD/Game** — teammate colors, no tutorial hints, no silencer detach, instant grenade lineup reticle, no damage prediction effects, **FPS-only telemetry** (ping/network indicators disabled), hide enemy name under crosshair.
 
 ### Keybinds (optional — `binds.cfg`)
 
@@ -146,10 +146,10 @@ Not scripted — set once in Settings → Video, syncs via Steam Cloud.
 Not part of the config — set these yourself once in Steam → right-click CS2 → Properties → Launch Options:
 
 ```
--novid -tickrate 128 -high
+-tickrate 128 -high -nojoy -language english
 ```
 
-`-novid` skips intro video, `-tickrate 128` forces 128 tick on local servers, `-high` sets process priority. Syncs via Steam account.
+`-tickrate 128` forces 128 tick on local practice servers (MM/Faceit set server-side — this flag only affects offline bots). `-high` sets process priority. `-nojoy` skips controller init (faster startup). `-language english` forces English UI (useful in PC clubs with foreign Steam accounts). Syncs via Steam account.
 
 ## Notes
 
