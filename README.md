@@ -65,7 +65,7 @@ All methods ask which optional modules to include (keybinds, crosshair, viewmode
 
 **Team info** — teammate data always visible through walls (`cl_teamid_overhead_mode 3`): pips + names + health + equipment.
 
-**Radar** — zoomed out (0.25), no rotation, not centered. `N` toggles between overview and zoomed+rotating mode. Square radar on scoreboard.
+**Radar** — zoomed out (0.25), no rotation, not centered. `N` toggles between overview and zoomed+rotating mode.
 
 **Visibility** — no first-person bullet tracers, teammate loadouts visible through walls, right-hand viewmodel.
 
