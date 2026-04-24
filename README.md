@@ -121,6 +121,20 @@ Gives you: infinite grenades + full kit on spawn, trajectory preview, auto-respa
 | `=` | Toggle debug info (pos, impacts, penetration) |
 | `H` | Slow-mo toggle (1x ↔ 0.25x) |
 | `-` | No-spread toggle |
+| `F8` / `F9` | Seed T / CT spawn point at crosshair (wallbang drill) |
+| `F10` | Wipe all spawn points (default + seeded) |
+| `F12` | Toggle spawn-point visualizer (bbox + text overlay) |
+
+**Wallbang drill:** CS2 has no "respawn at death position" cvar. Workaround — seed custom spawn entities at your chosen angles, then let random respawn cycle bots through them:
+
+1. `exec practice`
+2. `F10` → wipe map's default spawns (clean slate, lasts until map reload)
+3. Noclip (`L`) to each hot angle, aim at floor, press `F8` (T) or `F9` (CT) — seed 5-10 spawns
+4. `F12` → confirm all placed (bbox/labels visible)
+5. `bot_quota N` in console (N = number of seeded spawns). `bot_quota_mode fill` is already set, so dying bots auto-refill.
+6. Shoot through walls; bots die + respawn at random seed.
+
+Overflow caveat: if `bot_quota` exceeds available spawns, extra bots land at invalid fallback positions (stuck in walls / on edges). Count your seeds.
 
 ## Video Settings (set manually in-game)
 
