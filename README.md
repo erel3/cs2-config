@@ -8,11 +8,25 @@ Try methods top to bottom. If one fails, move to the next.
 
 ### Method 1: PowerShell (fastest)
 
-Paste into PowerShell:
+Paste into PowerShell. Try the primary URL first; if the network blocks it, fall through the list:
+
 ```powershell
+# Primary — jsDelivr CDN (usually unblocked)
 irm https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup.ps1 | iex
+
+# Fallback 1 — statically.io (different CDN infra)
+irm https://cdn.statically.io/gh/erel3/cs2-config@main/setup.ps1 | iex
+
+# Fallback 2 — raw GitHub (original; may be blocked in KZ and similar regions)
+irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 | iex
+
+# Fallback 3 — githack (another raw-file proxy)
+irm https://rawcdn.githack.com/erel3/cs2-config/main/setup.ps1 | iex
 ```
-Pipes script into memory — no `.ps1` file on disk, so ExecutionPolicy doesn't apply. Uses jsDelivr CDN mirror of GitHub — routes around regional blocks on `raw.githubusercontent.com` (e.g. some KZ PC club networks).
+
+Pipes the script into memory — no `.ps1` file on disk, so ExecutionPolicy doesn't apply.
+
+**Why multiple hosts?** jsDelivr and statically.io are *public CDNs that auto-mirror any open-source GitHub repo* — nothing is deployed or pushed to them. The moment a file exists in a public GitHub repo, it's reachable at `cdn.jsdelivr.net/gh/<user>/<repo>@<branch>/<path>` (syntax: `@main`, `@<tag>`, or `@<commit-sha>`). jsDelivr watches GitHub for pushes and purges its cache within ~10–12 min (sometimes faster via their Purge API). Statically.io works the same way on a different CDN backbone (Cloudflare), and `rawcdn.githack.com` proxies raw GitHub URLs directly. All three are free, unmetered, no signup. Each lives on different IP ranges / DNS infra, so regional filters (like some KZ PC clubs blocking `raw.githubusercontent.com`) rarely catch all of them at once. No GitHub Pages, no release pipeline — push to `main`, URLs update automatically.
 
 ### Method 2: cmd.exe + batch file
 
