@@ -1,11 +1,28 @@
 #!/bin/bash
 # CS2 Config Installer for macOS (CrossOver)
-# Run: curl -sL https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup-mac.sh | bash
+# Run: curl -fsL https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup-mac.sh | bash
 #
-# Uses jsDelivr CDN mirror of GitHub — routes around regional blocks on
-# raw.githubusercontent.com. Caches ~10 min after each push.
+# Tries multiple public GitHub mirrors in order per file — first-reachable wins.
+# All free auto-proxies of the public repo; no deploy step on our side.
 
-REPO="https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
+HOSTS=(
+  "https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
+  "https://cdn.statically.io/gh/erel3/cs2-config@main"
+  "https://raw.githubusercontent.com/erel3/cs2-config/main"
+  "https://rawcdn.githack.com/erel3/cs2-config/main"
+)
+
+fetch() {
+  # $1 = relative path, $2 = destination
+  local path=$1 dest=$2 h
+  for h in "${HOSTS[@]}"; do
+    if curl -fsL --retry 2 "$h/$path" -o "$dest"; then
+      echo "$h"
+      return 0
+    fi
+  done
+  return 1
+}
 STEAM_ROOT="$HOME/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam"
 GAME_CFG_DIR="$STEAM_ROOT/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg"
 
@@ -17,14 +34,24 @@ fi
 # Download all cfg modules (all live under cfg/ in the repo)
 echo ""
 echo "Downloading configs to $GAME_CFG_DIR"
+USED=""
+FAILED=0
 for file in base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg; do
     printf "  %s..." "$file"
-    if curl -fsL --retry 2 "$REPO/cfg/$file" -o "$GAME_CFG_DIR/$file"; then
+    if h=$(fetch "cfg/$file" "$GAME_CFG_DIR/$file"); then
         echo " OK"
+        [ -z "$USED" ] && USED="$h"
     else
-        echo " FAILED"
+        echo " FAILED on all mirrors"
+        FAILED=$((FAILED + 1))
     fi
 done
+[ -n "$USED" ] && echo "First-reachable mirror: $USED"
+if [ "$FAILED" -gt 0 ]; then
+    echo ""
+    echo "$FAILED file(s) failed on ALL mirrors — every GitHub proxy blocked."
+    echo "Try a different network, or download the ZIP and run install.bat offline."
+fi
 
 # Ask which optional modules to include
 echo ""

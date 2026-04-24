@@ -1,10 +1,26 @@
 # CS2 Config Installer
 # Run: irm https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup.ps1 | iex
 #
-# Uses jsDelivr CDN mirror of GitHub — different infra, routes around regional
-# blocks on raw.githubusercontent.com. Caches ~10 min after each push.
+# Tries multiple public GitHub mirrors in order — the first one the network
+# allows wins. All are free auto-proxies of the same public repo; no deploy
+# step on our side. jsDelivr can cache ~10 min after each push.
 
-$repo = "https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
+$hosts = @(
+    "https://cdn.jsdelivr.net/gh/erel3/cs2-config@main",
+    "https://cdn.statically.io/gh/erel3/cs2-config@main",
+    "https://raw.githubusercontent.com/erel3/cs2-config/main",
+    "https://rawcdn.githack.com/erel3/cs2-config/main"
+)
+
+function Fetch-File($path, $dest) {
+    foreach ($h in $hosts) {
+        try {
+            Invoke-WebRequest "$h/$path" -OutFile $dest -UseBasicParsing -ErrorAction Stop
+            return $h
+        } catch { continue }
+    }
+    return $null
+}
 
 # Find Steam path via registry first, then fallback to common paths
 $steamPath = $null
@@ -63,19 +79,24 @@ Write-Host "Found CS2: $gameCfgDir" -ForegroundColor Green
 $allFiles = @("base.cfg", "binds.cfg", "crosshair.cfg", "viewmodel.cfg", "mouse.cfg", "practice.cfg", "practice_off.cfg")
 Write-Host "`nDownloading configs to $gameCfgDir" -ForegroundColor Cyan
 $failed = 0
+$usedHost = $null
 foreach ($file in $allFiles) {
     Write-Host "  $file..." -NoNewline
-    try {
-        Invoke-WebRequest "$repo/cfg/$file" -OutFile "$gameCfgDir\$file" -UseBasicParsing -ErrorAction Stop
+    $h = Fetch-File "cfg/$file" "$gameCfgDir\$file"
+    if ($h) {
         Write-Host " OK" -ForegroundColor Green
-    } catch {
-        Write-Host " FAILED ($($_.Exception.Message))" -ForegroundColor Red
+        if (-not $usedHost) { $usedHost = $h }
+    } else {
+        Write-Host " FAILED on all mirrors" -ForegroundColor Red
         $failed++
     }
 }
+if ($usedHost) {
+    Write-Host "`nFirst-reachable mirror: $usedHost" -ForegroundColor Cyan
+}
 if ($failed -gt 0) {
-    Write-Host "`n$failed download(s) failed. If this is a PC club / region-blocked network," -ForegroundColor Yellow
-    Write-Host "try a mobile hotspot and re-run, or use Method 4 (zip + install.bat) from the README." -ForegroundColor Yellow
+    Write-Host "`n$failed file(s) failed on ALL mirrors — every GitHub proxy was blocked." -ForegroundColor Yellow
+    Write-Host "Try a mobile hotspot and re-run, or use Method 4 (zip + install.bat) from the README." -ForegroundColor Yellow
 }
 
 # Ask which optional modules to include

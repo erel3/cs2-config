@@ -2,9 +2,12 @@
 chcp 65001 >nul 2>&1
 title CS2 Config Installer
 
-:: jsDelivr CDN mirror of GitHub — different infra, bypasses regional blocks
-:: on raw.githubusercontent.com (e.g. some KZ PC club networks).
-set "REPO=https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
+:: Multiple public GitHub mirrors — tried in order per file, first-reachable wins.
+:: All are free auto-proxies of the public repo; no deploy step on our side.
+set "HOST1=https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
+set "HOST2=https://cdn.statically.io/gh/erel3/cs2-config@main"
+set "HOST3=https://raw.githubusercontent.com/erel3/cs2-config/main"
+set "HOST4=https://rawcdn.githack.com/erel3/cs2-config/main"
 
 :: Find Steam path via registry
 set "STEAM="
@@ -60,16 +63,27 @@ echo.
 echo Downloading configs to %CFG%
 
 :: Download all files using curl (built into Windows 10+).
+:: For each file try HOST1..HOST4 in order, keep the first that succeeds.
 :: -f fails hard on HTTP errors, --retry handles flaky DNS / transient drops.
 set "DL_FAIL=0"
 for %%f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do (
-    echo   %%f...
-    curl -fL --retry 2 "%REPO%/cfg/%%f" -o "%CFG%\%%f" || set "DL_FAIL=1"
+    set "OK="
+    for %%h in ("!HOST1!" "!HOST2!" "!HOST3!" "!HOST4!") do (
+        if not defined OK (
+            curl -fL --retry 2 "%%~h/cfg/%%f" -o "%CFG%\%%f" >nul 2>&1 && set "OK=%%~h"
+        )
+    )
+    if defined OK (
+        echo   %%f OK ^(!OK!^)
+    ) else (
+        echo   %%f FAILED on all mirrors
+        set "DL_FAIL=1"
+    )
 )
 if "%DL_FAIL%"=="1" (
     echo.
-    echo One or more downloads failed. If this is a PC club / region-blocked network,
-    echo try a mobile hotspot and re-run, or use Method 4 ^(zip + install.bat^) from the README.
+    echo One or more downloads failed on ALL mirrors — every GitHub proxy blocked.
+    echo Try a mobile hotspot and re-run, or use Method 4 ^(zip + install.bat^) from the README.
     pause
     exit /b 1
 )
