@@ -2,7 +2,9 @@
 chcp 65001 >nul 2>&1
 title CS2 Config Installer
 
-set "REPO=https://raw.githubusercontent.com/erel3/cs2-config/main"
+:: jsDelivr CDN mirror of GitHub — different infra, bypasses regional blocks
+:: on raw.githubusercontent.com (e.g. some KZ PC club networks).
+set "REPO=https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
 
 :: Find Steam path via registry
 set "STEAM="
@@ -57,14 +59,19 @@ echo Found CS2: %CFG%
 echo.
 echo Downloading configs to %CFG%
 
-:: Download all files using curl (built into Windows 10+)
-for %%f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg) do (
+:: Download all files using curl (built into Windows 10+).
+:: -f fails hard on HTTP errors, --retry handles flaky DNS / transient drops.
+set "DL_FAIL=0"
+for %%f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do (
     echo   %%f...
-    curl -sL "%REPO%/cfg/%%f" -o "%CFG%\%%f"
+    curl -fL --retry 2 "%REPO%/cfg/%%f" -o "%CFG%\%%f" || set "DL_FAIL=1"
 )
-for %%f in (practice.cfg practice_off.cfg) do (
-    echo   %%f...
-    curl -sL "%REPO%/%%f" -o "%CFG%\%%f"
+if "%DL_FAIL%"=="1" (
+    echo.
+    echo One or more downloads failed. If this is a PC club / region-blocked network,
+    echo try a mobile hotspot and re-run, or use Method 4 ^(zip + install.bat^) from the README.
+    pause
+    exit /b 1
 )
 
 :: Ask which modules to include

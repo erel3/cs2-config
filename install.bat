@@ -57,17 +57,13 @@ echo Found CS2: %CFG%
 echo.
 echo Copying configs to %CFG%
 
-:: Copy cfg files
-for %%f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg) do (
+:: All cfgs live in a single folder now (cfg\)
+for %%f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do (
     if exist "%HERE%cfg\%%f" (
         copy /y "%HERE%cfg\%%f" "%CFG%\%%f" >nul
         echo   %%f OK
-    )
-)
-for %%f in (practice.cfg practice_off.cfg) do (
-    if exist "%HERE%%%f" (
-        copy /y "%HERE%%%f" "%CFG%\%%f" >nul
-        echo   %%f OK
+    ) else (
+        echo   %%f MISSING in %HERE%cfg\
     )
 )
 

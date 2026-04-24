@@ -1,7 +1,10 @@
 # CS2 Config Installer
-# Run: irm https://raw.githubusercontent.com/erel3/cs2-config/main/setup.ps1 | iex
+# Run: irm https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup.ps1 | iex
+#
+# Uses jsDelivr CDN mirror of GitHub — different infra, routes around regional
+# blocks on raw.githubusercontent.com. Caches ~10 min after each push.
 
-$repo = "https://raw.githubusercontent.com/erel3/cs2-config/main"
+$repo = "https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
 
 # Find Steam path via registry first, then fallback to common paths
 $steamPath = $null
@@ -56,18 +59,23 @@ if (-not $gameCfgDir) {
 }
 Write-Host "Found CS2: $gameCfgDir" -ForegroundColor Green
 
-# Download all cfg modules
-$allFiles = @("cfg/base.cfg", "cfg/binds.cfg", "cfg/crosshair.cfg", "cfg/viewmodel.cfg", "cfg/mouse.cfg", "practice.cfg", "practice_off.cfg")
+# Download all cfg modules (all live under cfg/ in the repo)
+$allFiles = @("base.cfg", "binds.cfg", "crosshair.cfg", "viewmodel.cfg", "mouse.cfg", "practice.cfg", "practice_off.cfg")
 Write-Host "`nDownloading configs to $gameCfgDir" -ForegroundColor Cyan
+$failed = 0
 foreach ($file in $allFiles) {
-    $outName = $file -replace "cfg/", ""
-    Write-Host "  $outName..." -NoNewline
+    Write-Host "  $file..." -NoNewline
     try {
-        Invoke-WebRequest "$repo/$file" -OutFile "$gameCfgDir\$outName" -UseBasicParsing
+        Invoke-WebRequest "$repo/cfg/$file" -OutFile "$gameCfgDir\$file" -UseBasicParsing -ErrorAction Stop
         Write-Host " OK" -ForegroundColor Green
     } catch {
-        Write-Host " FAILED" -ForegroundColor Red
+        Write-Host " FAILED ($($_.Exception.Message))" -ForegroundColor Red
+        $failed++
     }
+}
+if ($failed -gt 0) {
+    Write-Host "`n$failed download(s) failed. If this is a PC club / region-blocked network," -ForegroundColor Yellow
+    Write-Host "try a mobile hotspot and re-run, or use Method 4 (zip + install.bat) from the README." -ForegroundColor Yellow
 }
 
 # Ask which optional modules to include

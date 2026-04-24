@@ -1,8 +1,11 @@
 #!/bin/bash
 # CS2 Config Installer for macOS (CrossOver)
-# Run: curl -sL https://raw.githubusercontent.com/erel3/cs2-config/main/setup-mac.sh | bash
+# Run: curl -sL https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup-mac.sh | bash
+#
+# Uses jsDelivr CDN mirror of GitHub — routes around regional blocks on
+# raw.githubusercontent.com. Caches ~10 min after each push.
 
-REPO="https://raw.githubusercontent.com/erel3/cs2-config/main"
+REPO="https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
 STEAM_ROOT="$HOME/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam"
 GAME_CFG_DIR="$STEAM_ROOT/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg"
 
@@ -11,20 +14,12 @@ if [ ! -d "$GAME_CFG_DIR" ]; then
     exit 1
 fi
 
-# Download all cfg modules
+# Download all cfg modules (all live under cfg/ in the repo)
 echo ""
 echo "Downloading configs to $GAME_CFG_DIR"
-for file in base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg; do
+for file in base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg; do
     printf "  %s..." "$file"
-    if curl -sL "$REPO/cfg/$file" -o "$GAME_CFG_DIR/$file"; then
-        echo " OK"
-    else
-        echo " FAILED"
-    fi
-done
-for file in practice.cfg practice_off.cfg; do
-    printf "  %s..." "$file"
-    if curl -sL "$REPO/$file" -o "$GAME_CFG_DIR/$file"; then
+    if curl -fsL --retry 2 "$REPO/cfg/$file" -o "$GAME_CFG_DIR/$file"; then
         echo " OK"
     else
         echo " FAILED"
