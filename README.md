@@ -18,9 +18,9 @@ Pipes script into memory — no `.ps1` file on disk, so ExecutionPolicy doesn't 
 
 If PowerShell is blocked entirely, paste into **cmd.exe**:
 ```cmd
-curl -fL --retry 2 https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/setup.bat -o %TEMP%\cs2.bat && %TEMP%\cs2.bat
+curl -fL --retry 2 https://cdn.statically.io/gh/erel3/cs2-config@main/setup.bat -o %TEMP%\cs2.bat && %TEMP%\cs2.bat
 ```
-Uses only `curl.exe` (built into Windows 10+) + batch. No PowerShell needed. The script pauses on error so you can read the message if something fails.
+Uses only `curl.exe` (built into Windows 10+) + batch. No PowerShell needed. Served via statically.io because jsDelivr refuses `.bat` (it strips Windows executable extensions as a safety measure); the downloaded `.bat` itself then fetches all configs via jsDelivr. The script pauses on error so you can read the message if something fails.
 
 ### Method 3: cmd.exe one-liner (no prompts, installs everything)
 
