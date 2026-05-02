@@ -117,28 +117,15 @@ Sensitivity **1.00** @ 1600 DPI (eDPI 1600), zoom sensitivity 1.0.
 
 ## Practice Mode
 
-1. Open console (`~`), type `map de_<name>` — loads the **official competitive build** (day version) used by FACEIT / Premier MM. Avoid `Play → Practice → Casual`: Casual on Ancient/Shoots loads the **night** variant (Aug 2025+) with different lighting; lineup landmarks shift.
-2. Type `exec practice`
+1. **Play → Practice with Bots → Competitive** → pick map → invite friends (optional) → Go
+2. Open console (`~`), type `exec practice`
 3. When done, type `exec practice_off` — resets bot state, cheats, timescale, xray, and unbinds practice keys (otherwise `bot_stop 1` will freeze bots on other maps like aimrush)
 
-### FACEIT / Active Duty map pool (2026)
+**Competitive sub-mode (NOT Casual).** Casual on Ancient/Shoots loads the **night** variant (Aug 2025+) with different lighting — lineup landmarks shift. Competitive loads the same day build as FACEIT / Premier — lineups transfer 1:1.
 
-Use the console name. Each loads the same build pros / FACEIT / Premier play on — single source of truth, lineups transfer 1:1.
+**FACEIT 2026 pool** (all available in Practice with Bots → Competitive map list): Dust 2, Mirage, Nuke, Ancient, Inferno, Anubis, Overpass, Cache. Cache added to CS2 Apr 29 2026; on FACEIT since Apr 22 2026; not yet in Premier Active Duty (expected post-IEM Cologne 2026).
 
-| Map | Console command |
-|-----|-----------------|
-| Dust 2   | `map de_dust2`    |
-| Mirage   | `map de_mirage`   |
-| Nuke     | `map de_nuke`     |
-| Ancient  | `map de_ancient`  |
-| Inferno  | `map de_inferno`  |
-| Anubis   | `map de_anubis`   |
-| Overpass | `map de_overpass` |
-| Cache    | `map de_cache`    |
-
-**Cache status (May 2026):** Added to CS2 Apr 29 2026 (Competitive, Casual, DM, Retakes). On FACEIT since Apr 22 2026. **Not yet in Premier Active Duty** — expected post-IEM Cologne 2026 (Season 5). FACEIT-playable now.
-
-**Why not workshop practice maps (yprac_*, lineup packs):** frozen snapshots from upload date. Valve patches active duty maps regularly (e.g. Aug 14 2025 Ancient — Temple-to-A-Main angle removed, Cave wallbang surface changed). Old snapshot ≠ current geometry → lineups silently break. Always train on `de_<name>`.
+**Skip workshop practice maps** (yprac_*, lineup packs) for active-duty lineups — frozen snapshots from upload date. Valve patches active duty regularly (Aug 14 2025 Ancient: Temple-to-A-Main angle removed, Cave wallbang surface changed). Old snapshot ≠ current geometry → lineups silently break. Train on the official map only.
 
 Gives you: infinite grenades + full kit on spawn, trajectory preview, auto-respawn, god mode, x-ray, buy anywhere, unlimited money, random spawns, frozen bots.
 
