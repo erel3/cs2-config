@@ -4,6 +4,8 @@ title CS2 Config Installer (offline)
 
 :: This script installs configs from the same folder it's in.
 :: Download the ZIP, extract, double-click install.bat.
+:: File list AND autoexec composition driven by cfg\manifest.txt.
+:: Adding a new cfg = 1 line in manifest, no script edits anywhere.
 
 set "HERE=%~dp0"
 
@@ -54,44 +56,43 @@ if not defined CFG (
 )
 echo Found CS2: %CFG%
 
+if not exist "%HERE%cfg\manifest.txt" (
+    echo.
+    echo ERROR: %HERE%cfg\manifest.txt missing. Re-extract the zip.
+    pause
+    exit /b 1
+)
+
 echo.
 echo Copying configs to %CFG%
 
-:: All cfgs live in a single folder now (cfg\)
-for %%f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do (
-    if exist "%HERE%cfg\%%f" (
-        copy /y "%HERE%cfg\%%f" "%CFG%\%%f" >nul
-        echo   %%f OK
+:: Copy manifest itself + all listed cfgs (eol=# skips comments)
+copy /y "%HERE%cfg\manifest.txt" "%CFG%\manifest.txt" >nul
+for /f "usebackq eol=# tokens=1,2,3 delims=|" %%a in ("%HERE%cfg\manifest.txt") do (
+    if exist "%HERE%cfg\%%a" (
+        copy /y "%HERE%cfg\%%a" "%CFG%\%%a" >nul
+        echo   %%a OK
     ) else (
-        echo   %%f MISSING in %HERE%cfg\
+        echo   %%a MISSING in %HERE%cfg\
     )
 )
 
-:: Ask which modules to include
+:: Build autoexec from manifest (always = unconditional, prompt = ask, extra = skip)
 echo.
-set "B=1" & set "C=1" & set "V=1" & set "M=1"
-
-set /p "YN=Install keybinds? (Y/n) "
-if /i "%YN%"=="n" set "B=0"
-
-set /p "YN=Install crosshair settings? (Y/n) "
-if /i "%YN%"=="n" set "C=0"
-
-set /p "YN=Install viewmodel settings? (Y/n) "
-if /i "%YN%"=="n" set "V=0"
-
-set /p "YN=Install mouse sensitivity? (Y/n) "
-if /i "%YN%"=="n" set "M=0"
-
-:: Build autoexec.cfg
-(
-    echo // === CS2 CONFIG by erel3 ===
-    echo exec base
-    if "%B%"=="1" echo exec binds
-    if "%C%"=="1" echo exec crosshair
-    if "%V%"=="1" echo exec viewmodel
-    if "%M%"=="1" echo exec mouse
-) > "%CFG%\autoexec.cfg"
+echo // === CS2 CONFIG by erel3 ===> "%CFG%\autoexec.cfg"
+for /f "usebackq eol=# tokens=1,2,3 delims=|" %%a in ("%HERE%cfg\manifest.txt") do (
+    set "fname=%%a"
+    set "kind=%%b"
+    set "ptext=%%c"
+    set "base=!fname:.cfg=!"
+    if "!kind!"=="always" (
+        echo exec !base!>> "%CFG%\autoexec.cfg"
+    ) else if "!kind!"=="prompt" (
+        set "YN="
+        set /p "YN=!ptext! (Y/n) "
+        if /i not "!YN!"=="n" echo exec !base!>> "%CFG%\autoexec.cfg"
+    )
+)
 
 echo.
 echo Done! Launch CS2 — settings apply automatically.

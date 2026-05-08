@@ -4,6 +4,8 @@
 #
 # Tries multiple public GitHub mirrors in order per file — first-reachable wins.
 # All free auto-proxies of the public repo; no deploy step on our side.
+# File list AND autoexec composition are driven by cfg/manifest.txt.
+# Adding a new cfg = 1 line in manifest, no script edits anywhere.
 
 HOSTS=(
   "https://cdn.jsdelivr.net/gh/erel3/cs2-config@main"
@@ -23,6 +25,7 @@ fetch() {
   done
   return 1
 }
+
 STEAM_ROOT="$HOME/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam"
 GAME_CFG_DIR="$STEAM_ROOT/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg"
 
@@ -31,12 +34,29 @@ if [ ! -d "$GAME_CFG_DIR" ]; then
     exit 1
 fi
 
-# Download all cfg modules (all live under cfg/ in the repo)
+# Download manifest first — drives the file list AND autoexec composition
+MANIFEST="$GAME_CFG_DIR/manifest.txt"
 echo ""
-echo "Downloading configs to $GAME_CFG_DIR"
+echo "Fetching manifest..."
+if ! fetch "cfg/manifest.txt" "$MANIFEST" >/dev/null; then
+    echo "ERROR: cfg/manifest.txt unreachable on every mirror."
+    exit 1
+fi
+
+# Parse manifest into parallel arrays (bash 3.2 compatible)
+NAMES=(); KINDS=(); PROMPTS=()
+while IFS='|' read -r fname kind prompt || [ -n "$fname" ]; do
+    case "$fname" in ''|\#*) continue ;; esac
+    NAMES+=("$fname")
+    KINDS+=("${kind:-always}")
+    PROMPTS+=("$prompt")
+done < "$MANIFEST"
+
+echo ""
+echo "Downloading ${#NAMES[@]} configs to $GAME_CFG_DIR"
 USED=""
 FAILED=0
-for file in base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg; do
+for file in "${NAMES[@]}"; do
     printf "  %s..." "$file"
     if h=$(fetch "cfg/$file" "$GAME_CFG_DIR/$file"); then
         echo " OK"
@@ -53,24 +73,27 @@ if [ "$FAILED" -gt 0 ]; then
     echo "Try a different network, or download the ZIP and run install.bat offline."
 fi
 
-# Ask which optional modules to include
+# Build autoexec.cfg: iterate manifest entries in order, emit `exec NAME` per kind
 echo ""
-MODULES="exec base"
-
-read -p "Install keybinds? (Y/n) " yn
-[ "$yn" != "n" ] && MODULES="$MODULES\nexec binds"
-
-read -p "Install crosshair settings? (Y/n) " yn
-[ "$yn" != "n" ] && MODULES="$MODULES\nexec crosshair"
-
-read -p "Install viewmodel settings? (Y/n) " yn
-[ "$yn" != "n" ] && MODULES="$MODULES\nexec viewmodel"
-
-read -p "Install mouse sensitivity? (Y/n) " yn
-[ "$yn" != "n" ] && MODULES="$MODULES\nexec mouse"
-
-# Build autoexec.cfg
-echo -e "// === CS2 CONFIG by erel3 ===\n$MODULES" > "$GAME_CFG_DIR/autoexec.cfg"
+AUTOEXEC="$GAME_CFG_DIR/autoexec.cfg"
+echo "// === CS2 CONFIG by erel3 ===" > "$AUTOEXEC"
+i=0
+while [ $i -lt ${#NAMES[@]} ]; do
+    fname=${NAMES[$i]}
+    kind=${KINDS[$i]}
+    prompt=${PROMPTS[$i]}
+    base=${fname%.cfg}
+    case "$kind" in
+        always)
+            echo "exec $base" >> "$AUTOEXEC" ;;
+        prompt)
+            read -p "$prompt (Y/n) " yn
+            [ "$yn" != "n" ] && echo "exec $base" >> "$AUTOEXEC" ;;
+        extra)
+            : ;;
+    esac
+    i=$((i + 1))
+done
 
 echo ""
 echo "Generated autoexec.cfg"

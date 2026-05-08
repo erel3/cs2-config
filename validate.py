@@ -94,6 +94,41 @@ def extract_refs(cfg_path):
                 continue
             yield (i, head)
 
+VALID_KINDS = {"always", "prompt", "extra"}
+
+def check_manifest():
+    """Ensure cfg/manifest.txt and cfg/*.cfg are in sync, kinds are valid,
+    and prompt-kind entries have a non-empty prompt text."""
+    manifest = ROOT / "cfg" / "manifest.txt"
+    if not manifest.exists():
+        return ["cfg/manifest.txt missing"]
+    listed = set()
+    errs = []
+    for lno, raw in enumerate(manifest.read_text().splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 2:
+            errs.append(f"manifest.txt:{lno}  malformed (need filename|kind[|prompt]): {raw}")
+            continue
+        fname, kind = parts[0], parts[1]
+        prompt = parts[2] if len(parts) >= 3 else ""
+        if not fname:
+            errs.append(f"manifest.txt:{lno}  empty filename")
+            continue
+        if kind not in VALID_KINDS:
+            errs.append(f"manifest.txt:{lno}  invalid kind '{kind}' (allowed: always/prompt/extra)")
+        if kind == "prompt" and not prompt:
+            errs.append(f"manifest.txt:{lno}  kind=prompt requires prompt text after second '|'")
+        listed.add(fname)
+    actual = {p.name for p in (ROOT / "cfg").glob("*.cfg") if p.name != "autoexec.cfg"}
+    for f in sorted(actual - listed):
+        errs.append(f"cfg/{f} exists but is NOT in cfg/manifest.txt — installers will skip it")
+    for f in sorted(listed - actual):
+        errs.append(f"cfg/manifest.txt lists {f} but file is missing")
+    return errs
+
 def main():
     known = load_known()
     # known aliases defined within cfg files — collect first pass
@@ -111,12 +146,18 @@ def main():
             if key in known or key in KNOWN_CMDS or name in defined:
                 continue
             unknowns.append((cfg.relative_to(ROOT), lno, name))
-    if unknowns:
-        print("UNKNOWN cvars/commands:")
-        for path, lno, name in unknowns:
-            print(f"  {path}:{lno}  {name}")
+    manifest_errs = check_manifest()
+    if unknowns or manifest_errs:
+        if unknowns:
+            print("UNKNOWN cvars/commands:")
+            for path, lno, name in unknowns:
+                print(f"  {path}:{lno}  {name}")
+        if manifest_errs:
+            print("MANIFEST drift:")
+            for e in manifest_errs:
+                print(f"  {e}")
         sys.exit(1)
-    print(f"OK — all refs in {len(cfgs)} cfg(s) resolved against cvarlist.txt")
+    print(f"OK — all refs in {len(cfgs)} cfg(s) resolved against cvarlist.txt; manifest in sync")
 
 if __name__ == "__main__":
     main()

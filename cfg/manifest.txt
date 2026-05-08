@@ -1,0 +1,14 @@
+# cs2 cfg manifest — single source of truth for installer scripts.
+# Format: filename|kind|prompt   (pipe-delimited, comments start with #)
+#   kind = always  → installed + auto-execed unconditionally
+#   kind = prompt  → installed + asks user; if Y, auto-execed
+#   kind = extra   → installed but NOT auto-execed (run manually via console)
+# Order in autoexec.cfg matches order here. Add a new cfg = 1 line, all installers pick it up.
+base.cfg|always|
+binds.cfg|prompt|Install keybinds?
+crosshair.cfg|prompt|Install crosshair settings?
+viewmodel.cfg|prompt|Install viewmodel settings?
+mouse.cfg|prompt|Install mouse sensitivity?
+crosshair_old.cfg|extra|
+practice.cfg|extra|
+practice_off.cfg|extra|

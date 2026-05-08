@@ -4,6 +4,8 @@
 # Tries multiple public GitHub mirrors in order — the first one the network
 # allows wins. All are free auto-proxies of the same public repo; no deploy
 # step on our side. jsDelivr can cache ~10 min after each push.
+# File list AND autoexec composition driven by cfg/manifest.txt.
+# Adding a new cfg = 1 line in manifest, no script edits anywhere.
 
 $hosts = @(
     "https://cdn.jsdelivr.net/gh/erel3/cs2-config@main",
@@ -75,14 +77,34 @@ if (-not $gameCfgDir) {
 }
 Write-Host "Found CS2: $gameCfgDir" -ForegroundColor Green
 
-# Download all cfg modules (all live under cfg/ in the repo)
-$allFiles = @("base.cfg", "binds.cfg", "crosshair.cfg", "viewmodel.cfg", "mouse.cfg", "practice.cfg", "practice_off.cfg")
-Write-Host "`nDownloading configs to $gameCfgDir" -ForegroundColor Cyan
+# Download manifest first — drives file list and autoexec
+Write-Host "`nFetching manifest..." -ForegroundColor Cyan
+$manifestPath = "$gameCfgDir\manifest.txt"
+$mh = Fetch-File "cfg/manifest.txt" $manifestPath
+if (-not $mh) {
+    Write-Host "ERROR: cfg/manifest.txt unreachable on every mirror." -ForegroundColor Red
+    Read-Host "Press Enter to close"
+    return
+}
+
+# Parse manifest into entry objects (skip blanks and #-comments)
+$entries = Get-Content $manifestPath | ForEach-Object {
+    $line = $_.Trim()
+    if (-not $line -or $line.StartsWith("#")) { return $null }
+    $parts = $line -split '\|', 3
+    [PSCustomObject]@{
+        File   = $parts[0].Trim()
+        Kind   = if ($parts.Count -ge 2 -and $parts[1].Trim()) { $parts[1].Trim() } else { "always" }
+        Prompt = if ($parts.Count -ge 3) { $parts[2].Trim() } else { "" }
+    }
+} | Where-Object { $_ }
+
+Write-Host "`nDownloading $($entries.Count) configs to $gameCfgDir" -ForegroundColor Cyan
 $failed = 0
 $usedHost = $null
-foreach ($file in $allFiles) {
-    Write-Host "  $file..." -NoNewline
-    $h = Fetch-File "cfg/$file" "$gameCfgDir\$file"
+foreach ($e in $entries) {
+    Write-Host "  $($e.File)..." -NoNewline
+    $h = Fetch-File "cfg/$($e.File)" "$gameCfgDir\$($e.File)"
     if ($h) {
         Write-Host " OK" -ForegroundColor Green
         if (-not $usedHost) { $usedHost = $h }
@@ -99,30 +121,24 @@ if ($failed -gt 0) {
     Write-Host "Try a mobile hotspot and re-run, or use Method 4 (zip + install.bat) from the README." -ForegroundColor Yellow
 }
 
-# Ask which optional modules to include
+# Build autoexec.cfg from manifest (always = unconditional, prompt = ask, extra = skip)
 Write-Host ""
-$modules = @("base")
-
-$yn = Read-Host "Install keybinds? (Y/n)"
-if ($yn -ne "n") { $modules += "binds" }
-
-$yn = Read-Host "Install crosshair settings? (Y/n)"
-if ($yn -ne "n") { $modules += "crosshair" }
-
-$yn = Read-Host "Install viewmodel settings? (Y/n)"
-if ($yn -ne "n") { $modules += "viewmodel" }
-
-$yn = Read-Host "Install mouse sensitivity? (Y/n)"
-if ($yn -ne "n") { $modules += "mouse" }
-
-# Build autoexec.cfg
-$autoexec = "// === CS2 CONFIG by erel3 ===`n"
-foreach ($m in $modules) {
-    $autoexec += "exec $m`n"
+$lines = @("// === CS2 CONFIG by erel3 ===")
+foreach ($e in $entries) {
+    $base = [System.IO.Path]::GetFileNameWithoutExtension($e.File)
+    switch ($e.Kind) {
+        "always" { $lines += "exec $base" }
+        "prompt" {
+            $yn = Read-Host "$($e.Prompt) (Y/n)"
+            if ($yn -ne "n") { $lines += "exec $base" }
+        }
+        "extra"  { }
+        default  { $lines += "exec $base" }
+    }
 }
-Set-Content -Path "$gameCfgDir\autoexec.cfg" -Value $autoexec -NoNewline
+Set-Content -Path "$gameCfgDir\autoexec.cfg" -Value (($lines -join "`n") + "`n") -NoNewline
 
-Write-Host "`nGenerated autoexec.cfg with: $($modules -join ', ')" -ForegroundColor Green
+Write-Host "`nGenerated autoexec.cfg" -ForegroundColor Green
 Write-Host "`nDone! Launch CS2 — settings apply automatically." -ForegroundColor Green
 Write-Host "If autoexec doesn't run, add '+exec autoexec' to CS2 launch options." -ForegroundColor Yellow
 Write-Host "For practice mode, type 'exec practice' in console." -ForegroundColor Yellow
