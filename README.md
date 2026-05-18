@@ -105,7 +105,7 @@ Overrides applied on top of the restored defaults.
 
 ### Crosshair (optional)
 
-Static, small (size 1), center dot, teal color (27/195/144), no outline, no recoil follow, 250 alpha.
+Static, small (size 1), center dot, black (0/0/0), no outline, no recoil follow, 250 alpha.
 
 ### Viewmodel (optional)
 
