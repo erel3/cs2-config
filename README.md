@@ -77,7 +77,7 @@ All methods ask which optional modules to include (keybinds, crosshair, viewmode
 
 **Team info** — teammate data always visible through walls (`cl_teamid_overhead_mode 3`): pips + names + health + equipment.
 
-**Radar** — zoomed out (0.25), no rotation, not centered. `N` toggles between overview and zoomed+rotating mode.
+**Radar** — zoomed out (0.25), no rotation, not centered. `TAB` toggles between overview and zoomed+rotating mode.
 
 **Visibility** — no first-person bullet tracers, teammate loadouts visible through walls, right-hand viewmodel.
 
@@ -92,16 +92,17 @@ Overrides applied on top of the restored defaults.
 | Key | Action |
 |-----|--------|
 | `Z / X / C / V` | Flash / Smoke / HE / Molotov |
-| `4` | Decoy |
 | `Q` | Quick switch (AWP no-rescope) |
 | `Mwheeldown` | Jump (bhop) |
 | `CapsLock` | Drop bomb (switch to C4, drop, switch back) |
 | `/` | Toggle mute all incoming voice (audio feedback) |
 | `Backspace` | Clutch mode (mutes voice + distracting sounds until round end / death) |
 | `,` `.` | Bot hold position / follow |
-| `N` | Radar zoom toggle (defined in base.cfg) |
+| `TAB` | Radar zoom toggle (replaces default scoreboard) |
 
-**Unbound** (freed for other uses): `i`, `h`, `MWHEELUP`, `6`, `7`, `8`, `9`.
+**Unbound** (freed for other uses): `i`, `h`, `MWHEELUP`.
+
+Number keys `1..9` stay default — required for spectator/demo POV switch to player N.
 
 ### Crosshair (optional)
 
