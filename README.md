@@ -110,7 +110,7 @@ Static cross, tiny solid plus — length 2 px, thickness 1 px, gap 0, center dot
 
 Uses the pixel-unit cvars from the Sep 22 2026 "Rush Hour" crosshair rework (`cl_crosshair_length`, `cl_crosshair_thickness`, `cl_crosshair_gap`, `cl_crosshaircolor_r/g/b/a`). Pre-update cvars (`cl_crosshairsize`, `cl_crosshairgap`, `cl_crosshaircolor`, `cl_crosshairalpha`, ...) and old share codes no longer work. `validate.py` checks every cfg against Valve's live cvar dump (weekly in CI).
 
-**Testing: dynamic variant** — `exec crosshair_dynamic` in console: same plus, but the bars move out with the weapon's real spread (moving/jumping/spraying), capped at 8 px (`cl_crosshair_dynamic_spread_limit`), and stay closed when a shot is accurate. `exec crosshair` switches back.
+**Testing: dynamic variant** — `exec crosshair_dynamic` in console: style 5 (Legacy/Shot Feedback) — same plus at rest, kicks out only on shots. `exec crosshair` switches back. Styles 0/7 draw real weapon spread, which is never zero, so their gap never closes.
 
 ### Viewmodel (optional)
 
