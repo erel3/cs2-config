@@ -40,7 +40,7 @@ Uses only `curl.exe` (built into Windows 10+) + batch. No PowerShell needed. Ser
 
 Absolute fallback — downloads all files and creates autoexec with all modules:
 ```cmd
-for %f in (base.cfg binds.cfg crosshair.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do curl -fL --retry 2 https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/cfg/%f -o "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\%f"
+for %f in (base.cfg binds.cfg crosshair.cfg crosshair_dynamic.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do curl -fL --retry 2 https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/cfg/%f -o "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\%f"
 (echo // === CS2 CONFIG by erel3 === & echo exec base & echo exec binds & echo exec crosshair & echo exec viewmodel & echo exec mouse) > "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\autoexec.cfg"
 ```
 > **Note:** If Steam is not in `Program Files (x86)`, replace the path. Check Steam → Settings → Storage for the actual path.
@@ -109,6 +109,8 @@ Number keys `1..9` stay default — required for spectator/demo POV switch to pl
 Static cross, tiny solid plus — length 2 px, thickness 1 px, gap 0, center dot (pixels at 1080p, rescaled by the game at other resolutions) — black (0/0/0), no outline, no recoil follow, full alpha.
 
 Uses the pixel-unit cvars from the Sep 22 2026 "Rush Hour" crosshair rework (`cl_crosshair_length`, `cl_crosshair_thickness`, `cl_crosshair_gap`, `cl_crosshaircolor_r/g/b/a`). Pre-update cvars (`cl_crosshairsize`, `cl_crosshairgap`, `cl_crosshaircolor`, `cl_crosshairalpha`, ...) and old share codes no longer work. `validate.py` checks every cfg against Valve's live cvar dump (weekly in CI).
+
+**Testing: dynamic variant** — `exec crosshair_dynamic` in console: same plus, but the bars move out with the weapon's real spread (moving/jumping/spraying), capped at 8 px (`cl_crosshair_dynamic_spread_limit`), and stay closed when a shot is accurate. `exec crosshair` switches back.
 
 ### Viewmodel (optional)
 
