@@ -4,14 +4,16 @@ on:
   push:
     paths:
       - "**/*.cfg"
+      - "cfg/manifest.txt"
       - "validate.py"
-      - "docs/cvarlist.txt"
       - ".github/workflows/validate.yml"
   pull_request:
     paths:
       - "**/*.cfg"
+      - "cfg/manifest.txt"
       - "validate.py"
-      - "docs/cvarlist.txt"
+  schedule:
+    - cron: "0 6 * * 1"   # weekly: catch Valve renaming/removing cvars before a match does
   workflow_dispatch:
 
 jobs:
@@ -22,5 +24,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Fetch live-build cvar dump (SteamDB)
+        run: |
+          for f in convars commands; do
+            curl -fsSL -o docs/$f.txt https://raw.githubusercontent.com/SteamDatabase/GameTracking-CS2/master/DumpSource2/$f.txt
+          done
       - name: Run validate.py
         run: python3 validate.py

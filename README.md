@@ -73,7 +73,7 @@ All methods ask which optional modules to include (keybinds, crosshair, viewmode
 
 **Keybinds reset** — `base.cfg` starts with `unbindall` and then restores all **pure CS2 defaults** (from `user_keys_default.vcfg`). This wipes any leftover binds from previous users/sessions. Customizations live only in `binds.cfg`.
 
-**Audio** — Crisp EQ, all music disabled (except 10-sec bomb warning at ~35% — cvar is `0.1225` because the in-game slider uses a square-root scale), lower audio latency, MVP music muted when players alive.
+**Audio** — Crisp EQ, all music disabled in every game mode (except 10-sec bomb warning at ~35% — cvar is `0.1225` because the in-game slider uses a square-root scale), lower audio latency, MVP music muted when players alive.
 
 **Team info** — teammate data always visible through walls (`cl_teamid_overhead_mode 3`): pips + names + health + equipment.
 
@@ -106,7 +106,9 @@ Number keys `1..9` stay default — required for spectator/demo POV switch to pl
 
 ### Crosshair (optional)
 
-Static, small (size 1), center dot, black (0/0/0), no outline, no recoil follow, 250 alpha.
+Static cross, tiny solid plus — length 2 px, thickness 1 px, gap 0, center dot (pixels at 1080p, rescaled by the game at other resolutions) — black (0/0/0), no outline, no recoil follow, full alpha.
+
+Uses the pixel-unit cvars from the Sep 22 2026 "Rush Hour" crosshair rework (`cl_crosshair_length`, `cl_crosshair_thickness`, `cl_crosshair_gap`, `cl_crosshaircolor_r/g/b/a`). Pre-update cvars (`cl_crosshairsize`, `cl_crosshairgap`, `cl_crosshaircolor`, `cl_crosshairalpha`, ...) and old share codes no longer work. `validate.py` checks every cfg against Valve's live cvar dump (weekly in CI).
 
 ### Viewmodel (optional)
 
