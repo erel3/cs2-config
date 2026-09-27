@@ -40,7 +40,7 @@ Uses only `curl.exe` (built into Windows 10+) + batch. No PowerShell needed. Ser
 
 Absolute fallback — downloads all files and creates autoexec with all modules:
 ```cmd
-for %f in (base.cfg binds.cfg crosshair.cfg crosshair_dynamic.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do curl -fL --retry 2 https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/cfg/%f -o "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\%f"
+for %f in (base.cfg binds.cfg crosshair.cfg crosshair_circle.cfg viewmodel.cfg mouse.cfg practice.cfg practice_off.cfg) do curl -fL --retry 2 https://cdn.jsdelivr.net/gh/erel3/cs2-config@main/cfg/%f -o "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\%f"
 (echo // === CS2 CONFIG by erel3 === & echo exec base & echo exec binds & echo exec crosshair & echo exec viewmodel & echo exec mouse) > "%ProgramFiles(x86)%\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\autoexec.cfg"
 ```
 > **Note:** If Steam is not in `Program Files (x86)`, replace the path. Check Steam → Settings → Storage for the actual path.
@@ -110,7 +110,7 @@ Static cross, tiny solid plus — length 2 px, thickness 1 px, gap 0, center dot
 
 Uses the pixel-unit cvars from the Sep 22 2026 "Rush Hour" crosshair rework (`cl_crosshair_length`, `cl_crosshair_thickness`, `cl_crosshair_gap`, `cl_crosshaircolor_r/g/b/a`). Pre-update cvars (`cl_crosshairsize`, `cl_crosshairgap`, `cl_crosshaircolor`, `cl_crosshairalpha`, ...) and old share codes no longer work. `validate.py` checks every cfg against Valve's live cvar dump (weekly in CI).
 
-**Testing: dynamic variant** — `exec crosshair_dynamic` in console: style 5 (Legacy/Shot Feedback) — same plus at rest, kicks out only on shots. `exec crosshair` switches back. Styles 0/7 draw real weapon spread, which is never zero, so their gap never closes.
+**Testing: circle variant** — `exec crosshair_circle` in console: small static ring (`cl_crosshair_gap 3`) + center dot, same color. `exec crosshair` switches back. Dynamic styles (0/1/5/7) were tried and dropped: they draw real weapon spread, so the gap never closes.
 
 ### Viewmodel (optional)
 

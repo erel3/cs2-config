@@ -7,7 +7,7 @@
 base.cfg|always|
 binds.cfg|prompt|Install keybinds?
 crosshair.cfg|prompt|Install crosshair settings?
-crosshair_dynamic.cfg|extra|
+crosshair_circle.cfg|extra|
 viewmodel.cfg|prompt|Install viewmodel settings?
 mouse.cfg|prompt|Install mouse sensitivity?
 practice.cfg|extra|
